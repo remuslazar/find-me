@@ -1,0 +1,31 @@
+$icon-font-path: "../bower_components/bootstrap-sass-official/vendor/assets/fonts/bootstrap/";
+// bower:scss
+@import "bootstrap-sass-official/vendor/assets/stylesheets/bootstrap.scss";
+// endbower
+
+.browsehappy {
+  margin: 0.2em 0;
+  background: #ccc;
+  color: #000;
+  padding: 0.2em 0;
+}
+
+form .ng-invalid {
+    color:white;
+    background: red;	
+}
+
+body, html, div#page {
+  height: 100%;
+  width: 100%;
+}
+
+#menu {
+    position: absolute;
+    z-index: 1000;
+    font-size: 200%;
+    padding: .15em;
+    margin: .4em;
+    opacity:0.8;
+    background-color: white;
+}

@@ -1,0 +1,17 @@
+<div id="menu">
+ <a ng-click="mapCanvasStyle={height:list ? '100%' : '70%'};list=!list;"> ☰ </a>
+</div>
+<div id="map_canvas" ng-style="mapCanvasStyle" style="width: 100%; height: 100%;"></div>
+<div ng-show="list">
+  <table class="table table-stripped">
+    <tr>
+      <th>Nickname</th>
+      <th>Last Update</th>
+    </tr>
+    <tr ng-repeat="place in places | orderByPriority" ng-click="selectPlace(place)" ng-class="selectedPlace == place ? 'active' : ''">
+      <td>{{ place.$id }}</td>
+      <td>{{ place.timestamp | date : 'short' }}</td>
+    </tr>
+  </table>
+  {{ connectionState.$val() }}
+</div>
