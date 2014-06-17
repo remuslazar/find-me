@@ -17,6 +17,9 @@ angular.module('findMeApp')
     
     function centerMap(position) {
       if (!mapIsInitialized) {
+	if (!(position && position.coords)) {
+	  return;
+	}
 	mapIsInitialized = true;
 //	console.log('map setCenter');
 	var pos = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);

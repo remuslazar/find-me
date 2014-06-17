@@ -58,7 +58,6 @@ angular.module('findMeApp')
 //	  console.log(nickname + ' updated to the map');
 	} else { // create new marker
 	  var newMarker = Googlemap.createMarker(nickname, info, nickname === $scope.nickname);
-	  newMarker.timestamp = info.timestamp;
 	  markers[nickname] = newMarker;
 //	  console.log(nickname + ' added to the map');
 	  Googlemap.centerMap(info);
@@ -72,5 +71,11 @@ angular.module('findMeApp')
     $scope.$on('$viewContentLoaded', function() {
       Googlemap.init();
     });
+
+    $scope.deletePlace = function(id) {
+      Places.deletePlace(id);
+      markers[id].setMap(null);
+      delete markers[id];
+    };
 
   });

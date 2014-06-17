@@ -39,4 +39,10 @@ angular.module('findMeApp')
 
     };
     this.places = $firebase(ref);    
+
+    this.deletePlace = function(id) {
+//      console.log('deleting id: '+id);
+      this.places.$remove(id);
+    };
+
   });
