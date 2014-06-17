@@ -9,8 +9,6 @@
  * Main module of the application.
  */
 
-/*global Firebase */
-
 angular
   .module('findMeApp', [
     'ngAnimate',
@@ -21,12 +19,6 @@ angular
     'ngTouch',
     'firebase',
   ])
-  .factory('PlacesDatastore', function($firebase) {
-    var datastore = {};
-    var ref = new Firebase('https://find-me.firebaseio.com/places');
-    datastore.places = $firebase(ref);
-    return datastore;
-  })
   .config(function ($routeProvider) {
     $routeProvider
       .when('/', {

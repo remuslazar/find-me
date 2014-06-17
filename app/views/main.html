@@ -5,13 +5,20 @@
 <div ng-show="list">
   <table class="table table-stripped">
     <tr>
+      <th>Status</th>
       <th>Nickname</th>
+      <th>+/-</th>
       <th>Last Update</th>
     </tr>
-    <tr ng-repeat="place in places | orderByPriority" ng-click="selectPlace(place)" ng-class="selectedPlace == place ? 'active' : ''">
+    <tr ng-repeat="place in places | orderByPriority | orderBy:'timestamp':'desc'" ng-click="selectPlace(place)" ng-class="selectedPlace == place ? 'active' : ''">
+      <td>
+	<span ng-class="place.connections ? 'label label-success' : 'label label-info'">
+	  {{ place.connections ? 'online' : 'offline' }}
+	</span>
+      </td>
       <td>{{ place.$id }}</td>
+      <td>{{ place.coords.accuracy | number:0 }}m</td>
       <td>{{ place.timestamp | date : 'short' }}</td>
     </tr>
   </table>
-  {{ connectionState.$val() }}
 </div>
