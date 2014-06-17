@@ -77,5 +77,11 @@ angular.module('findMeApp')
       markers[id].setMap(null);
       delete markers[id];
     };
+    
+    // filter only the places with available coordinates
+    $scope.placeFilter = function(a) {
+      return angular.isObject(a.coords);
+    };
+
 
   });

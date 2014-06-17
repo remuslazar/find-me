@@ -30,6 +30,9 @@ angular.module('findMeApp')
 
     function mapInit() {
       var mapOptions = {
+	streetViewControl: false,
+	panControl: false,
+	zoomControl: false,
 	center: lastLocation,
 	zoom: 14,
 	mapTypeId: google.maps.MapTypeId.ROADMAP
@@ -72,6 +75,7 @@ angular.module('findMeApp')
     this.centerMap = centerMap;
     this.createMarker = createMarker;
     this.panTo = function(coords) {
+      if (!coords) { return; }
       map.panTo(new google.maps.LatLng(coords.latitude, coords.longitude));
     };
     

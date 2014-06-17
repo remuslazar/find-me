@@ -11,7 +11,7 @@
       <th>Last Update</th>
       <th><span class="glyphicon glyphicon-trash"></span></th>
     </tr>
-    <tr ng-repeat="place in places | orderByPriority | orderBy:'timestamp':'desc'" ng-click="selectPlace(place)" ng-class="selectedPlace == place ? 'active' : ''">
+    <tr ng-repeat="place in places | orderByPriority | filter:placeFilter | orderBy:'timestamp':'desc'" ng-click="selectPlace(place)" ng-class="selectedPlace == place ? 'active' : ''">
       <td>
 	<span ng-class="place.connections ? 'label label-success' : 'label label-info'">
 	  {{ place.connections ? 'online' : 'offline' }}
@@ -19,7 +19,7 @@
       </td>
       <td>{{ place.$id }}</td>
       <td>{{ place.coords.accuracy | number:0 }}m</td>
-      <td>{{ place.timestamp | date : 'short' }}</td>
+      <td>{{ place.timestamp | niceDate }}</td>
       <th>
 	<span ng-if="!place.connections" class="glyphicon glyphicon-trash" ng-click="deletePlace(place.$id); $event.stopPropagation()"></span>
       </th>

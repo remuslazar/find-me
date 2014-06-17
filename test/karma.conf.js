@@ -24,6 +24,9 @@ module.exports = function(config) {
       'bower_components/angular-route/angular-route.js',
       'bower_components/angular-sanitize/angular-sanitize.js',
       'bower_components/angular-touch/angular-touch.js',
+      'https://cdn.firebase.com/js/client/1.0.15/firebase.js',
+      'https://cdn.firebase.com/libs/angularfire/0.7.1/angularfire.min.js',
+      'https://maps.googleapis.com/maps/api/js?key=AIzaSyAVXOMt8C-YH2WmgLBXh6Id4AoNuKqXs38&sensor=true',
       'app/scripts/**/*.js',
       'test/mock/**/*.js',
       'test/spec/**/*.js'

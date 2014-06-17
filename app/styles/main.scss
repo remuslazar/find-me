@@ -24,8 +24,13 @@ body, html, div#page {
     position: absolute;
     z-index: 1000;
     font-size: 200%;
-    padding: .15em;
-    margin: .4em;
     opacity:0.8;
     background-color: white;
+    cursor:pointer;
+    margin: .4em;
+}
+
+#menu a {
+    padding: .15em .5em;
+    text-decoration: none;
 }
