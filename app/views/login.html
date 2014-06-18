@@ -12,7 +12,7 @@
       </div>
       <div class="form-group">
 	<label for="inputRoomname">Room Name</label>
-	<input name="roomName" ng-pattern="/^[a-zA-Z0-9]+$/" ng-model="roomName" type="text" class="form-control" id="inputRoomName" placeholder="Room Name" {{roomName ? '' : readonly}} required>
+	<input name="roomName" ng-pattern="/^[a-zA-Z0-9]+$/" ng-model="roomName" type="text" class="form-control" id="inputRoomName" placeholder="Room Name" required>
       </div>
       <button ng-show="loginForm.nickname.$valid && loginForm.roomName.$valid" type="submit" class="btn btn-default">Submit</button>
     </form>
