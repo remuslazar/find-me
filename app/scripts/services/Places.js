@@ -9,8 +9,9 @@ angular.module('findMeApp')
     var ref = new Firebase(firebaseUrl + 'places');
     var ownLocationRef;
 
-    this.setOwnLocation = function(nickname) {
-      ownLocationRef = ref.child(nickname);
+    this.setOwnLocation = function(nickname, roomName) {
+      ownLocationRef = ref.child(roomName).child(nickname);
+      this.places = $firebase(ref).$child(roomName);
       var myConnectionsRef = ownLocationRef.child('connections');
       var lastOnlineRef = ownLocationRef.child('lastOnline');
 
@@ -38,7 +39,6 @@ angular.module('findMeApp')
       });
 
     };
-    this.places = $firebase(ref);    
 
     this.deletePlace = function(id) {
 //      console.log('deleting id: '+id);

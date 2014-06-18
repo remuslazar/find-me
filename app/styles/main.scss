@@ -11,8 +11,7 @@ $icon-font-path: "../bower_components/bootstrap-sass-official/vendor/assets/font
 }
 
 form .ng-invalid {
-    color:white;
-    background: red;	
+  border: 1px solid red;
 }
 
 body, html, div#page {

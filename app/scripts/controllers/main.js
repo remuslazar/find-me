@@ -11,12 +11,16 @@
 /*global google */
 
 angular.module('findMeApp')
-  .controller('MainCtrl', function ($scope, $cookieStore, $location, Places, Googlemap) {
+  .controller('MainCtrl', function ($scope, $cookieStore, $location, Places, Googlemap, $routeParams) {
+
     $scope.nickname = $cookieStore.get('nickname');
-    if (!$scope.nickname) {
-      $location.path('/login');
+    var roomName = $routeParams.roomName;
+
+    if (!$scope.nickname || !roomName) {
+      $location.path((roomName || '') +'/login');
     }
-    Places.setOwnLocation($scope.nickname);
+
+    Places.setOwnLocation($scope.nickname, roomName);
 
     $scope.places = Places.places;
 
