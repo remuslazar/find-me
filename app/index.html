@@ -1,10 +1,10 @@
 <!doctype html>
-<html class="no-js">
+<html class="no-js" ng-app="findMeApp">
   <head>
     <meta charset="utf-8">
-    <title></title>
+    <title ng-bind="title">find-me</title>
     <meta name="description" content="">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
     <!-- build:css styles/vendor.css -->
     <!-- bower:css -->
@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="styles/main.css">
     <!-- endbuild -->
   </head>
-  <body ng-app="findMeApp">
+  <body>
     <div ng-view="" id="page"></div>
     <script src="https://cdn.firebase.com/js/client/1.0.15/firebase.js"></script>
     <!-- build:js(.) scripts/vendor.js -->

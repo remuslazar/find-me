@@ -11,14 +11,19 @@
 /*global google */
 
 angular.module('findMeApp')
-  .controller('MainCtrl', function ($scope, $cookieStore, $location, Places, Googlemap, $routeParams) {
+  .controller('MainCtrl', function ($rootScope, $scope, $cookieStore, $location, Places, Googlemap, $routeParams) {
+
+    function login() {
+      $location.path((roomName || '') +'/login');
+    }
 
     $scope.nickname = $cookieStore.get('nickname');
     var roomName = $routeParams.roomName;
 
     if (!$scope.nickname || !roomName) {
-      $location.path((roomName || '') +'/login');
+      return login();
     }
+    $rootScope.title = '['+$scope.nickname+'] ' + 'Find Me :: ' + roomName;
 
     Places.setOwnLocation($scope.nickname, roomName);
 
@@ -87,5 +92,6 @@ angular.module('findMeApp')
       return angular.isObject(a.coords);
     };
 
+    $scope.login = login;
 
   });
