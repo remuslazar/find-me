@@ -1,11 +1,16 @@
 <div class="container">
   <div class="jumbotron">
-    <form role="form" ng-submit="submit()">
+    <form role="form" name="loginForm" ng-submit="loginForm.nickname.$valid && submit()">
       <div class="form-group">
 	<label for="inputNickname">Your Nickname</label>
-	<input ng-model="nickname" type="text" class="form-control" id="inputNickname" placeholder="Your Nickname" autofocus>
+	<input name="nickname" ng-pattern="/^[^\.\$\[\]\#\/]+$/" ng-model="nickname" type="text" class="form-control" id="inputNickname" placeholder="Your Nickname" autofocus>
       </div>
-      <button type="submit" class="btn btn-default">Submit</button>
+      <div class="error-container" ng-show="loginForm.nickname.$dirty && loginForm.nickname.$invalid">
+	<small class="error">
+	  Nickname cannot contain some special chars, sorry!
+	</small>
+      </div>
+      <button ng-show="loginForm.nickname.$valid" type="submit" class="btn btn-default">Submit</button>
     </form>
   </div>
 </div>
