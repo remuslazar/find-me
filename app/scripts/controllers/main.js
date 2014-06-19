@@ -61,31 +61,34 @@ angular.module('findMeApp')
     };
     
     var markers = {};
-    $scope.markers = markers;
-    
-    function updatePlacesOnMap() {
-      var places = Places.places.$getIndex();
-      for (var i=0; i<places.length; i++) {
-	var nickname = places[i];
-	var info = Places.places[nickname];
-	if (markers[nickname]) { // update
-	  markers[nickname].setPosition(new google.maps.LatLng(info.coords.latitude, info.coords.longitude));
-	  //	  console.log(nickname + ' updated to the map');
-	} else { // create new marker
-	  var newMarker = Googlemap.createMarker(nickname, info, nickname === $scope.nickname);
-	  markers[nickname] = newMarker;
-	  //	  console.log(nickname + ' added to the map');
-	  Googlemap.centerMap(info);
-	}
-      }      
-    }
     
     function initView() {
       Googlemap.init();
       Places.setOwnLocation($scope.nickname, roomName);
       markers = {};
-      updatePlacesOnMap();
-      Places.places.$on('change', updatePlacesOnMap);
+
+      Places.places.$on('child_added', function(childSnapshot) {
+	var name = childSnapshot.snapshot.name;
+	var info = childSnapshot.snapshot.value;
+	markers[name] = Googlemap.createMarker(name, info, name === $scope.nickname);
+	Googlemap.centerMap(info);
+	Places.places.$child(name).$child('coords').$on('value', function(dataSnapshot) {
+	  console.log('rt update for "'+name+'" received');
+	  var coords = dataSnapshot.snapshot.value;
+	  if (coords) {
+	    if (markers[name]) {
+	      markers[name].setPosition(new google.maps.LatLng(coords.latitude, coords.longitude));
+	    }
+	  } else {
+	    console.log('"'+name+'" has gone away now!');
+	    if (markers[name]) {
+	      markers[name].setMap(null);
+	      delete markers[name];
+	    }
+	  }
+	});
+      });
+
       $scope.places = Places.places;
       geolocationInit();
 //      console.log('main view initialized now');
@@ -98,8 +101,6 @@ angular.module('findMeApp')
 
     $scope.deletePlace = function(id) {
       Places.deletePlace(id);
-      markers[id].setMap(null);
-      delete markers[id];
     };
     
     // filter only the places with available coordinates
