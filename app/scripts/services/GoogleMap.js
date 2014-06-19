@@ -63,12 +63,19 @@ angular.module('findMeApp')
       map = new google.maps.Map(document.getElementById('map_canvas'), mapOptions);
     }
 
+    var ownPosition;
+
     var infoWindow = new google.maps.InfoWindow();
-    function createMarker(nickname, info, isOwnLocation) {
-      if (!info.coords) {
+    function createMarker(nickname, coords, isOwnLocation) {
+      if (!coords) {
 	return;
       }
-      var pos = new google.maps.LatLng(info.coords.latitude, info.coords.longitude);
+      var pos = new google.maps.LatLng(coords.latitude, coords.longitude);
+
+      if (isOwnLocation) {
+	ownPosition = pos;
+      }
+
       var icon = {
 	path: google.maps.SymbolPath.CIRCLE,
 	fillOpacity: 0.5,
@@ -106,6 +113,21 @@ angular.module('findMeApp')
     this.panTo = function(coords) {
       if (!coords) { return; }
       map.panTo(new google.maps.LatLng(coords.latitude, coords.longitude));
+    };
+
+    this.distanceTo = function(coords) {
+      if (!ownPosition) { return; }
+      return google.maps.geometry.spherical.computeDistanceBetween(
+	ownPosition,
+	new google.maps.LatLng(coords.latitude, coords.longitude));
+      };
+
+    this.updatePosition = function(marker, coords, isOwnLocation) {
+      var pos = new google.maps.LatLng(coords.latitude, coords.longitude);
+      marker.setPosition(pos);
+      if (isOwnLocation) {
+	ownPosition = pos;
+      }
     };
     
   });

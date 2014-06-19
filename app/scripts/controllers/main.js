@@ -8,8 +8,6 @@
  * Controller of the findMeApp
  */
 
-/*global google */
-
 angular.module('findMeApp')
   .controller('MainCtrl', function ($rootScope, $scope, $cookieStore, $location, Places, Googlemap, $routeParams, $timeout) {
     
@@ -70,14 +68,16 @@ angular.module('findMeApp')
       Places.places.$on('child_added', function(childSnapshot) {
 	var name = childSnapshot.snapshot.name;
 	var info = childSnapshot.snapshot.value;
-	markers[name] = Googlemap.createMarker(name, info, name === $scope.nickname);
+	markers[name] = Googlemap.createMarker(name, info.coords, name === $scope.nickname);
 	Googlemap.centerMap(info);
 	Places.places.$child(name).$child('coords').$on('value', function(dataSnapshot) {
 	  console.log('rt update for "'+name+'" received');
 	  var coords = dataSnapshot.snapshot.value;
 	  if (coords) {
 	    if (markers[name]) {
-	      markers[name].setPosition(new google.maps.LatLng(coords.latitude, coords.longitude));
+	      Googlemap.updatePosition(markers[name],
+				       coords,
+				       name === $scope.nickname);
 	    }
 	  } else {
 	    console.log('"'+name+'" has gone away now!');
@@ -108,4 +108,9 @@ angular.module('findMeApp')
       return angular.isObject(a.coords);
     };
     $scope.login = login;
+
+    $scope.distanceTo = function(coords) {
+      return Googlemap.distanceTo(coords);
+    };
+
   });

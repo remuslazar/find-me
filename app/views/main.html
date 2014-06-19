@@ -7,7 +7,7 @@
     <tr>
       <th>Status</th>
       <th>Nickname</th>
-      <th>+/-</th>
+      <th>Dist</th>
       <th>Last Update</th>
       <th><span class="glyphicon glyphicon-trash"></span></th>
     </tr>
@@ -18,7 +18,10 @@
 	</span>
       </td>
       <td>{{ place.$id }}</td>
-      <td>{{ place.coords.accuracy | number:0 }}m</td>
+      <td>
+	{{ distanceTo(place.coords) | niceDistance }} (+/-
+	{{ place.coords.accuracy | niceDistance }})
+      </td>
       <td>{{ place.timestamp | niceDate }}</td>
       <th>
 	<span ng-if="!place.connections" class="glyphicon glyphicon-trash" ng-click="deletePlace(place.$id); $event.stopPropagation()"></span>
