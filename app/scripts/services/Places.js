@@ -18,7 +18,7 @@ angular.module('findMeApp')
       var connectedRef = new Firebase(firebaseUrl + '.info/connected');
       connectedRef.on('value', function(snap) {
 	if (snap.val() === true) {
-	  console.log('connected');
+//	  console.log('connected');
 	  // We're connected (or reconnected)! Do anything here that should happen only if online (or on reconnect)
 	  // add this device to my connections list
 	  // this value could contain info about the device or a timestamp too

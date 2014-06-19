@@ -21,7 +21,7 @@ angular
   ])
   .config(function ($routeProvider) {
     $routeProvider
-      .when('/:roomName?/login', {
+      .when('/login', {
         templateUrl: 'views/login.html',
         controller: 'LoginCtrl'
       })
@@ -32,5 +32,5 @@ angular
       .when('/:roomName?', {
         templateUrl: 'views/main.html',
         controller: 'MainCtrl'
-      })
+      });
   });

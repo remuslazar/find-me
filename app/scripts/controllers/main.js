@@ -11,74 +11,89 @@
 /*global google */
 
 angular.module('findMeApp')
-  .controller('MainCtrl', function ($rootScope, $scope, $cookieStore, $location, Places, Googlemap, $routeParams) {
-
-    function login() {
-      $location.path((roomName || '') +'/login');
+  .controller('MainCtrl', function ($rootScope, $scope, $cookieStore, $location, Places, Googlemap, $routeParams, $timeout) {
+    
+    function geolocationInit() {
+      if (navigator.geolocation) {
+	navigator.geolocation.watchPosition(
+	  function(position) { // success
+	     console.log('Latitude: ' + position.coords.latitude + ', ' +
+	     		'Longitude: ' + position.coords.longitude);
+	    // update my location in the cloud
+	    Places.updateMyPosition(position);
+	    Googlemap.centerMap(position);
+	  },
+	  function() { // error
+	    console.log('geolocation failed');
+	    // try again in 10 seconds
+	    $timeout(geolocationInit, 10000);
+	  },
+	  {
+	    enableHighAccuracy: true,
+	    timeout: 30000,
+	    maximumAge: 10000
+	  } ); // options
+      } else {
+	window.alert('Sorry, Geolocation is not supported by this browser!');
+      }
     }
-
+    
+    function login() {
+      $location.path('/login');
+    }
+    
     $scope.nickname = $cookieStore.get('nickname');
     var roomName = $routeParams.roomName;
-
+    $scope.roomName = roomName;
+    
+    if (roomName) {
+      $cookieStore.put('roomName', roomName);
+    }
+    
     if (!$scope.nickname || !roomName) {
       return login();
     }
     $rootScope.title = '['+$scope.nickname+'] ' + 'Find Me :: ' + roomName;
-
-    Places.setOwnLocation($scope.nickname, roomName);
-
-    $scope.places = Places.places;
-
+    
     $scope.selectPlace = function(place) {
       $scope.selectedPlace = place;
       Googlemap.panTo(place.coords);
     };
     
-    if (navigator.geolocation) {
-      navigator.geolocation.watchPosition(
-	function(position) { // success
-	  console.log('Latitude: ' + position.coords.latitude + ', ' +
-		      'Longitude: ' + position.coords.longitude);
-	  // update my location in the cloud
-	  Places.updateMyPosition(position);
-	  Googlemap.centerMap(position);
-	},
-	function() { // error
-	  console.log('geolocation failed');
-	},
-	{
-	  enableHighAccuracy: true,
-	  timeout: 30000,
-	  maximumAge: 10000
-	} ); // options
-    } else {
-      window.alert('Sorry, Geolocation is not supported by this browser!');
-    }
+    var markers = {};
+    $scope.markers = markers;
     
-    var markers = {};    
-    
-    Places.places.$on('change', function() {
+    function updatePlacesOnMap() {
       var places = Places.places.$getIndex();
       for (var i=0; i<places.length; i++) {
 	var nickname = places[i];
 	var info = Places.places[nickname];
 	if (markers[nickname]) { // update
 	  markers[nickname].setPosition(new google.maps.LatLng(info.coords.latitude, info.coords.longitude));
-//	  console.log(nickname + ' updated to the map');
+	  //	  console.log(nickname + ' updated to the map');
 	} else { // create new marker
 	  var newMarker = Googlemap.createMarker(nickname, info, nickname === $scope.nickname);
 	  markers[nickname] = newMarker;
-//	  console.log(nickname + ' added to the map');
+	  //	  console.log(nickname + ' added to the map');
 	  Googlemap.centerMap(info);
 	}
-      }
-    });
-
-    $scope.markers = markers;
-
-    // init the google map object on load
-    $scope.$on('$viewContentLoaded', function() {
+      }      
+    }
+    
+    function initView() {
       Googlemap.init();
+      Places.setOwnLocation($scope.nickname, roomName);
+      markers = {};
+      updatePlacesOnMap();
+      Places.places.$on('change', updatePlacesOnMap);
+      $scope.places = Places.places;
+      geolocationInit();
+//      console.log('main view initialized now');
+    }
+
+    // init the google map object and start geolocating on load
+    angular.element(document).ready(function () {
+      initView();
     });
 
     $scope.deletePlace = function(id) {
@@ -91,7 +106,5 @@ angular.module('findMeApp')
     $scope.placeFilter = function(a) {
       return angular.isObject(a.coords);
     };
-
     $scope.login = login;
-
   });

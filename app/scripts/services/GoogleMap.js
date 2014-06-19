@@ -7,6 +7,8 @@ angular.module('findMeApp')
     // AngularJS will instantiate a singleton by calling "new" on this function
 
     var map;
+    var markers = [];
+
     var mapIsInitialized = false;    
 
     var lastLocation = new google.maps.LatLng(52.520816, 13.410186); // berlin
@@ -30,7 +32,25 @@ angular.module('findMeApp')
 	$cookieStore.put('lastPosition', position);
       }
     }
-
+    
+    // Sets the map on all markers in the array.
+    function setAllMap(map) {
+      for (var i = 0; i < markers.length; i++) {
+	markers[i].setMap(map);
+      }
+    }
+    
+    // Removes the markers from the map, but keeps them in the array.
+    function clearMarkers() {
+      setAllMap(null);
+    }
+    
+    // Deletes all markers in the array by removing references to them.
+    function deleteMarkers() {
+      clearMarkers();
+      markers = [];
+    }
+    
     function mapInit() {
       var mapOptions = {
 	streetViewControl: false,
@@ -74,6 +94,7 @@ angular.module('findMeApp')
       if (markersCount++) {
 	map.fitBounds(latlngbounds);
       }
+      markers.push(marker);
       return marker;
     }
 
@@ -81,6 +102,7 @@ angular.module('findMeApp')
     this.init = mapInit;
     this.centerMap = centerMap;
     this.createMarker = createMarker;
+    this.deleteMarkers = deleteMarkers;
     this.panTo = function(coords) {
       if (!coords) { return; }
       map.panTo(new google.maps.LatLng(coords.latitude, coords.longitude));
