@@ -11,11 +11,8 @@
 
 angular
   .module('findMeApp', [
-    'ngAnimate',
     'ngCookies',
-    'ngResource',
     'ngRoute',
-    'ngSanitize',
     'ngTouch',
     'firebase',
   ])
