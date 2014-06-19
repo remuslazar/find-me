@@ -33,3 +33,20 @@ body, html, div#page {
     padding: .15em .5em;
     text-decoration: none;
 }
+
+#map_canvas {
+    width: 100%;
+    -webkit-transition: all linear .15s;
+    transition: all linear .15s;
+}
+
+
+#map_canvas.list_visible {
+    height: 70%;
+
+}
+
+#map_canvas.full_screen {
+    height: 100%;
+}
+
