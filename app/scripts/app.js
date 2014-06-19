@@ -16,6 +16,7 @@ angular
     'ngTouch',
     'firebase',
   ])
+  .constant('FIREBASE_URL', 'https://find-me.firebaseio.com/')
   .config(function ($routeProvider) {
     $routeProvider
       .when('/login', {

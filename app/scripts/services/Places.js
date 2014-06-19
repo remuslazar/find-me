@@ -3,10 +3,9 @@
 /*global Firebase */
 
 angular.module('findMeApp')
-  .service('Places', function Places($firebase) {
+  .service('Places', function Places($firebase, FIREBASE_URL) {
     // AngularJS will instantiate a singleton by calling "new" on this function
-    var firebaseUrl = 'https://find-me.firebaseio.com/';
-    var ref = new Firebase(firebaseUrl + 'places');
+    var ref = new Firebase(FIREBASE_URL + 'places');
     var ownLocationRef;
 
     this.setOwnLocation = function(nickname, roomName) {
@@ -15,7 +14,7 @@ angular.module('findMeApp')
       var myConnectionsRef = ownLocationRef.child('connections');
       var lastOnlineRef = ownLocationRef.child('lastOnline');
 
-      var connectedRef = new Firebase(firebaseUrl + '.info/connected');
+      var connectedRef = new Firebase(FIREBASE_URL + '.info/connected');
       connectedRef.on('value', function(snap) {
 	if (snap.val() === true) {
 //	  console.log('connected');

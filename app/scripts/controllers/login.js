@@ -6,6 +6,6 @@ angular.module('findMeApp')
     $scope.roomName = $cookieStore.get('roomName');
     $scope.submit = function() {
       $cookieStore.put('nickname', $scope.nickname);
-      $location.path('/'+ $scope.roomName);
+      $location.path('/'+ $scope.roomName).replace();
     };
   });
