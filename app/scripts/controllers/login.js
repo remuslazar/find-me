@@ -2,12 +2,12 @@
 
 angular.module('findMeApp')
   .controller('LoginCtrl', function ($scope, Settings, $location) {
-    $scope.nickname = Settings.nickname;
-    $scope.roomName = Settings.roomName;
+    $scope.nickname = Settings.data.nickname;
+    $scope.roomName = Settings.data.roomName;
 
     $scope.submit = function() {
-      Settings.setNickname($scope.nickname);
-      Settings.setRoomName($scope.roomName);
-      $location.path('/'+ Settings.roomName).replace();
+      Settings.data.nickname = $scope.nickname;
+      Settings.data.roomName = $scope.roomName;
+      $location.path('/'+ Settings.data.roomName).replace();
     };
   });

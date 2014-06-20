@@ -9,7 +9,7 @@
  */
 
 angular.module('findMeApp')
-  .controller('MainCtrl', function ($scope, Settings, $location, Places, Googlemap, $routeParams, $timeout) {
+  .controller('MainCtrl', function ($scope, Settings, $location, Places, Googlemap) {
     
     function geolocationInit() {
       if (navigator.geolocation) {
@@ -24,7 +24,7 @@ angular.module('findMeApp')
 	  function() { // error
 	    console.log('geolocation failed');
 	    // try again in 10 seconds
-	    $timeout(geolocationInit, 10000);
+//	    $timeout(geolocationInit, 10000);
 	  },
 	  {
 	    enableHighAccuracy: true,
@@ -53,13 +53,14 @@ angular.module('findMeApp')
     
     function initView() {
       Googlemap.init();
-      Places.setOwnLocation(Settings.nickname, Settings.roomName);
+      Places.setOwnLocation(Settings.data.nickname, Settings.data.roomName);
       markers = {};
 
       Places.places.$on('child_added', function(childSnapshot) {
 	var name = childSnapshot.snapshot.name;
 	var info = childSnapshot.snapshot.value;
-	markers[name] = Googlemap.createMarker(name, info.coords, name === Settings.nickname);
+	console.log('new device: '+name+' added');
+	markers[name] = Googlemap.createMarker(name, info.coords, name === Settings.data.nickname);
 	Googlemap.centerMap(info);
 	Places.places.$child(name).$child('coords').$on('value', function(dataSnapshot) {
 	  console.log('rt update for "'+name+'" received');
@@ -68,7 +69,7 @@ angular.module('findMeApp')
 	    if (markers[name]) {
 	      Googlemap.updatePosition(markers[name],
 				       coords,
-				       name === Settings.nickname);
+				       name === Settings.data.nickname);
 	    }
 	  } else {
 	    console.log('"'+name+'" has gone away now!');

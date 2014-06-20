@@ -12,6 +12,7 @@
 angular
   .module('findMeApp', [
     'ngCookies',
+    'ngStorage',
     'ngAnimate',
     'ngRoute',
     'ngTouch',
