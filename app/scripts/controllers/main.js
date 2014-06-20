@@ -21,8 +21,8 @@ angular.module('findMeApp')
 	    Places.updateMyPosition(position);
 	    Googlemap.centerMap(position);
 	  },
-	  function() { // error
-	    console.log('geolocation failed');
+	  function(err) { // error
+	    console.log('geolocation failed: '+err.message);
 	    // try again in 10 seconds
 //	    $timeout(geolocationInit, 10000);
 	  },
@@ -67,7 +67,12 @@ angular.module('findMeApp')
 	  console.log('rt update for "'+name+'" received');
 	  var coords = dataSnapshot.snapshot.value;
 	  if (coords) {
-	    if (markers[name]) {
+	    if (!markers[name]) {
+	      // create the marker on the fly if it does not exist
+	      markers[name] = Googlemap.createMarker(name,
+						     coords,
+						     name === Settings.data.nickname);
+	    } else {
 	      Googlemap.updatePosition(markers[name],
 				       coords,
 				       name === Settings.data.nickname);
