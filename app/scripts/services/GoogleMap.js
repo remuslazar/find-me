@@ -71,6 +71,19 @@ angular.module('findMeApp')
       map = new google.maps.Map(document.getElementById('map_canvas'), mapOptions);
     }
 
+    function getMarkerIcon(heading) {
+      return {
+	path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+	fillOpacity: 0.5,
+	strokeColor: '0099cc',
+	strokeOpacity: 1.0,
+	fillColor: '0099cc',
+	strokeWeight: 1.5, 
+	scale: 5, //pixels
+	rotation: heading
+      };
+    }
+
     var ownPosition;
 
     var infoWindow = new google.maps.InfoWindow();
@@ -84,22 +97,13 @@ angular.module('findMeApp')
 	ownPosition = pos;
       }
 
-      var icon = {
-	path: google.maps.SymbolPath.CIRCLE,
-	fillOpacity: 0.5,
-	strokeColor: '0099cc',
-	strokeOpacity: 1.0,
-	fillColor: '0099cc',
-	strokeWeight: 2.0, 
-	scale: 10 //pixels
-      };
       var marker = new google.maps.Marker({
         map: map,
         position: pos,
         title: isOwnLocation ? 'My location' : nickname,
 	draggable: false,
 	animation: google.maps.Animation.DROP,
-	icon: isOwnLocation ? icon : ''
+	icon: isOwnLocation ? getMarkerIcon(0) : ''
       });
       google.maps.event.addListener(marker, 'click', function(){
         infoWindow.setContent('<h4>' + marker.title + '</h4>');
@@ -113,6 +117,13 @@ angular.module('findMeApp')
       return marker;
     }
 
+    function distanceTo(coords) {
+      if (!ownPosition) { return; }
+      return google.maps.geometry.spherical.computeDistanceBetween(
+	ownPosition,
+	new google.maps.LatLng(coords.latitude, coords.longitude));
+    }
+
     // exported functions for this service
     this.init = mapInit;
     this.centerMap = centerMap;
@@ -123,20 +134,46 @@ angular.module('findMeApp')
       if (!coords) { return; }
       map.panTo(new google.maps.LatLng(coords.latitude, coords.longitude));
     };
+    
+    this.distanceTo = distanceTo;
 
-    this.distanceTo = function(coords) {
-      if (!ownPosition) { return; }
-      return google.maps.geometry.spherical.computeDistanceBetween(
-	ownPosition,
-	new google.maps.LatLng(coords.latitude, coords.longitude));
-      };
-
+    var paths = {};
+    
     this.updatePosition = function(marker, coords, isOwnLocation) {
       var pos = new google.maps.LatLng(coords.latitude, coords.longitude);
-      marker.setPosition(pos);
+      var heading = google.maps.geometry.spherical.computeHeading(
+	marker.position,
+	pos);
+
       if (isOwnLocation) {
 	ownPosition = pos;
+	marker.setIcon(getMarkerIcon(heading));
       }
+      
+      if (!paths[marker.title]) {
+	var path = new Array(pos);
+	paths[marker.title] = new google.maps.Polyline({
+	  path: path,
+	  geodesic: true,
+	  strokeColor: isOwnLocation ? '0099cc' : 'ff0000',
+	  strokeOpacity: 1,
+	  strokeWeight: 2
+	});
+	paths[marker.title].setMap(map);
+      } else {
+	var i = paths[marker.title].getPath().getLength();
+	if (i) { // at least one element available
+	  i--; // compute the index val
+	  var lastPathPoint = paths[marker.title].getPath().getAt(i);
+	  if (google.maps.geometry.spherical.computeDistanceBetween(
+	    lastPathPoint, pos) > 2) {
+	    // only if the distance between the last point of the path and the
+	    // current position is > 2m, THEN update the path
+	    paths[marker.title].getPath().push(pos);
+	  }
+	}
+      }
+      marker.setPosition(pos);
     };
     
   });
