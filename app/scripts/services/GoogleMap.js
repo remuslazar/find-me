@@ -8,9 +8,9 @@ angular.module('findMeApp')
 
     var map;
     var markers = [];
+    var paths = {};
 
     var mapIsInitialized = false;    
-
     var lastLocation = new google.maps.LatLng(52.520816, 13.410186); // berlin
     var latlngbounds = new google.maps.LatLngBounds();
 
@@ -52,6 +52,11 @@ angular.module('findMeApp')
 
     // Deletes the specified marker
     function deleteMarker(marker) {
+      // delete the path associated with this marker first, if available
+      if (paths[marker.title]) {
+	paths[marker.title].setMap(null);
+	delete paths[marker.title];
+      }
       var index = markers.indexOf(marker);
       if (index !== -1) {
 	marker.setMap(null);
@@ -124,34 +129,9 @@ angular.module('findMeApp')
 	new google.maps.LatLng(coords.latitude, coords.longitude));
     }
 
-    // exported functions for this service
-    this.init = mapInit;
-    this.centerMap = centerMap;
-    this.createMarker = createMarker;
-    this.deleteMarkers = deleteMarkers;
-    this.deleteMarker = deleteMarker;
-    this.panTo = function(coords) {
-      if (!coords) { return; }
-      map.panTo(new google.maps.LatLng(coords.latitude, coords.longitude));
-    };
-    
-    this.distanceTo = distanceTo;
-
-    var paths = {};
-    
-    this.updatePosition = function(marker, coords, isOwnLocation) {
-      var pos = new google.maps.LatLng(coords.latitude, coords.longitude);
-      var heading = google.maps.geometry.spherical.computeHeading(
-	marker.position,
-	pos);
-
-      if (isOwnLocation) {
-	ownPosition = pos;
-	marker.setIcon(getMarkerIcon(heading));
-      }
-      
-      if (!paths[marker.title]) {
-	var path = new Array(pos);
+    function updatePath(marker, isOwnLocation) {
+      if (!paths[marker.title]) { // create a new path
+	var path = new Array(marker.position);
 	paths[marker.title] = new google.maps.Polyline({
 	  path: path,
 	  geodesic: true,
@@ -166,14 +146,41 @@ angular.module('findMeApp')
 	  i--; // compute the index val
 	  var lastPathPoint = paths[marker.title].getPath().getAt(i);
 	  if (google.maps.geometry.spherical.computeDistanceBetween(
-	    lastPathPoint, pos) > 2) {
+	    lastPathPoint, marker.position) > 3) {
 	    // only if the distance between the last point of the path and the
-	    // current position is > 2m, THEN update the path
-	    paths[marker.title].getPath().push(pos);
+	    // current position is > 3m, THEN update the path
+	    paths[marker.title].getPath().push(marker.position);
 	  }
 	}
       }
-      marker.setPosition(pos);
+    }
+
+    // exported functions for this service
+    this.init = mapInit;
+    this.centerMap = centerMap;
+    this.createMarker = createMarker;
+    this.deleteMarkers = deleteMarkers;
+    this.deleteMarker = deleteMarker;
+    this.panTo = function(coords) {
+      if (!coords) { return; }
+      map.panTo(new google.maps.LatLng(coords.latitude, coords.longitude));
+    };
+    
+    this.distanceTo = distanceTo;
+
+    this.updatePosition = function(marker, coords, isOwnLocation) {
+      var pos = new google.maps.LatLng(coords.latitude, coords.longitude);
+      var heading = google.maps.geometry.spherical.computeHeading(
+	marker.position,
+	pos);
+
+      if (isOwnLocation) {
+	ownPosition = pos;
+	marker.setIcon(getMarkerIcon(heading));
+      }
+      
+      marker.setPosition(pos);      
+      updatePath(marker, isOwnLocation);
     };
     
   });
