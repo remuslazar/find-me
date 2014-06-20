@@ -122,6 +122,7 @@ angular.module('findMeApp')
       return marker;
     }
 
+    // distance in m from point at coords to own current location
     function distanceTo(coords) {
       if (!ownPosition) { return; }
       return google.maps.geometry.spherical.computeDistanceBetween(
@@ -137,7 +138,7 @@ angular.module('findMeApp')
 	  geodesic: true,
 	  strokeColor: isOwnLocation ? '0099cc' : 'ff0000',
 	  strokeOpacity: 1,
-	  strokeWeight: 2
+	  strokeWeight: 2.5
 	});
 	paths[marker.title].setMap(map);
       } else {
