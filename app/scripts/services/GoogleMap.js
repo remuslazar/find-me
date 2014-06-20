@@ -13,7 +13,6 @@ angular.module('findMeApp')
 
     var lastLocation = new google.maps.LatLng(52.520816, 13.410186); // berlin
     var latlngbounds = new google.maps.LatLngBounds();
-    var markersCount = 0;
 
     var lastPosition = $cookieStore.get('lastPosition');
     if (lastPosition && lastPosition.coords) {
@@ -49,6 +48,15 @@ angular.module('findMeApp')
     function deleteMarkers() {
       clearMarkers();
       markers = [];
+    }
+
+    // Deletes the specified marker
+    function deleteMarker(marker) {
+      var index = markers.indexOf(marker);
+      if (index !== -1) {
+	marker.setMap(null);
+	markers.splice(index,1);
+      }
     }
     
     function mapInit() {
@@ -98,7 +106,7 @@ angular.module('findMeApp')
         infoWindow.open(map, marker);
       });
       latlngbounds.extend(pos);
-      if (markersCount++) {
+      if (markers.length) {
 	map.fitBounds(latlngbounds);
       }
       markers.push(marker);
@@ -110,6 +118,7 @@ angular.module('findMeApp')
     this.centerMap = centerMap;
     this.createMarker = createMarker;
     this.deleteMarkers = deleteMarkers;
+    this.deleteMarker = deleteMarker;
     this.panTo = function(coords) {
       if (!coords) { return; }
       map.panTo(new google.maps.LatLng(coords.latitude, coords.longitude));

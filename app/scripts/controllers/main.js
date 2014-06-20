@@ -54,6 +54,7 @@ angular.module('findMeApp')
     function initView() {
       Googlemap.init();
       Places.setOwnLocation(Settings.data.nickname, Settings.data.roomName);
+      Googlemap.deleteMarkers();
       markers = {};
 
       Places.places.$on('child_added', function(childSnapshot) {
@@ -74,7 +75,7 @@ angular.module('findMeApp')
 	  } else {
 	    console.log('"'+name+'" has gone away now!');
 	    if (markers[name]) {
-	      markers[name].setMap(null);
+	      Googlemap.deleteMarker(markers[name]);
 	      delete markers[name];
 	    }
 	  }
