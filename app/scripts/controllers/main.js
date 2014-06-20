@@ -9,7 +9,7 @@
  */
 
 angular.module('findMeApp')
-  .controller('MainCtrl', function ($rootScope, $scope, $cookieStore, $location, Places, Googlemap, $routeParams, $timeout) {
+  .controller('MainCtrl', function ($scope, Settings, $location, Places, Googlemap, $routeParams, $timeout) {
     
     function geolocationInit() {
       if (navigator.geolocation) {
@@ -40,18 +40,9 @@ angular.module('findMeApp')
       $location.path('/login');
     }
     
-    $scope.nickname = $cookieStore.get('nickname');
-    var roomName = $routeParams.roomName;
-    $scope.roomName = roomName;
-    
-    if (roomName) {
-      $cookieStore.put('roomName', roomName);
-    }
-    
-    if (!$scope.nickname || !roomName) {
+    if (!Settings.areValid()) {
       return login();
     }
-    $rootScope.title = '['+$scope.nickname+'] ' + 'Find Me :: ' + roomName;
     
     $scope.selectPlace = function(place) {
       $scope.selectedPlace = place;
@@ -62,13 +53,13 @@ angular.module('findMeApp')
     
     function initView() {
       Googlemap.init();
-      Places.setOwnLocation($scope.nickname, roomName);
+      Places.setOwnLocation(Settings.nickname, Settings.roomName);
       markers = {};
 
       Places.places.$on('child_added', function(childSnapshot) {
 	var name = childSnapshot.snapshot.name;
 	var info = childSnapshot.snapshot.value;
-	markers[name] = Googlemap.createMarker(name, info.coords, name === $scope.nickname);
+	markers[name] = Googlemap.createMarker(name, info.coords, name === Settings.nickname);
 	Googlemap.centerMap(info);
 	Places.places.$child(name).$child('coords').$on('value', function(dataSnapshot) {
 	  console.log('rt update for "'+name+'" received');
@@ -77,7 +68,7 @@ angular.module('findMeApp')
 	    if (markers[name]) {
 	      Googlemap.updatePosition(markers[name],
 				       coords,
-				       name === $scope.nickname);
+				       name === Settings.nickname);
 	    }
 	  } else {
 	    console.log('"'+name+'" has gone away now!');
@@ -113,4 +104,6 @@ angular.module('findMeApp')
       return Googlemap.distanceTo(coords);
     };
 
+    // make the settings service available to the view
+    $scope.settings = Settings;
   });

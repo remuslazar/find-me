@@ -1,11 +1,13 @@
 'use strict';
 
 angular.module('findMeApp')
-  .controller('LoginCtrl', function ($scope, $cookieStore, $location) {
-    $scope.nickname = $cookieStore.get('nickname');
-    $scope.roomName = $cookieStore.get('roomName');
+  .controller('LoginCtrl', function ($scope, Settings, $location) {
+    $scope.nickname = Settings.nickname;
+    $scope.roomName = Settings.roomName;
+
     $scope.submit = function() {
-      $cookieStore.put('nickname', $scope.nickname);
-      $location.path('/'+ $scope.roomName).replace();
+      Settings.setNickname($scope.nickname);
+      Settings.setRoomName($scope.roomName);
+      $location.path('/'+ Settings.roomName).replace();
     };
   });
