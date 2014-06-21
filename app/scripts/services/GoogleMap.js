@@ -104,20 +104,20 @@ angular.module('findMeApp')
     var ownPosition;
 
     var infoWindow = new google.maps.InfoWindow();
-    function createMarker(nickname, coords, isOwnLocation) {
-      
-      var pos; // undefined
 
-      if (coords) { // coords available?
-	pos = new google.maps.LatLng(coords.latitude, coords.longitude);
-	if (isOwnLocation) {
-	  ownPosition = pos;
-	}
+
+    // Create a marker and display it on the map
+    // coords should contain a valid position, else this function will fail
+    function createMarker(nickname, coords, isOwnLocation) {
+      var pos = new google.maps.LatLng(coords.latitude, coords.longitude);
+
+      if (isOwnLocation) {
+	ownPosition = pos;
       }
 
       var marker = new google.maps.Marker({
         map: map,
-        position: pos, // pos could potentially be undefined, that's just fine
+        position: pos,
         title: nickname,
 	draggable: false,
 	animation: google.maps.Animation.DROP,

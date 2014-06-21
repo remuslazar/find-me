@@ -63,12 +63,14 @@ angular.module('findMeApp')
 	var name = childSnapshot.snapshot.name;
 	var info = childSnapshot.snapshot.value;
 	console.log('new device: '+name+' added');
-	markers[name] = Googlemap.createMarker(name, info.coords, name === Settings.data.nickname);
-	Googlemap.centerMap(info);
 	Places.places.$child(name).$child('coords').$on('value', function(dataSnapshot) {
 	  console.log('rt update for "'+name+'" received');
 	  var coords = dataSnapshot.snapshot.value;
 	  if (coords) {
+	    if (!markers[name]) { // create a marker on the fly
+	      markers[name] = Googlemap.createMarker(name, coords, name === Settings.data.nickname);
+	      Googlemap.centerMap(info);
+	    }
 	    // we know that this particalar marker exists because we created it before
 	    Googlemap.updatePosition(markers[name],
 				     coords,
