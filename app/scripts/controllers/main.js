@@ -20,6 +20,7 @@ angular.module('findMeApp')
 	    // update my location in the cloud
 	    Places.updateMyPosition(position);
 	    Googlemap.centerMap(position);
+	    $scope.gpsPosition = position;
 	  },
 	  function(err) { // error
 	    console.log('geolocation failed: '+err.message);
@@ -52,11 +53,12 @@ angular.module('findMeApp')
     var markers = {};
     
     function initView() {
+      $scope.gpsPosition = null;
       Googlemap.init();
       Places.setOwnLocation(Settings.data.nickname, Settings.data.roomName);
-      Googlemap.deleteMarkers();
       markers = {};
-
+      
+      // listen to data changes
       Places.places.$on('child_added', function(childSnapshot) {
 	var name = childSnapshot.snapshot.name;
 	var info = childSnapshot.snapshot.value;
@@ -67,29 +69,23 @@ angular.module('findMeApp')
 	  console.log('rt update for "'+name+'" received');
 	  var coords = dataSnapshot.snapshot.value;
 	  if (coords) {
-	    if (!markers[name]) {
-	      // create the marker on the fly if it does not exist
-	      markers[name] = Googlemap.createMarker(name,
-						     coords,
-						     name === Settings.data.nickname);
-	    } else {
-	      Googlemap.updatePosition(markers[name],
-				       coords,
-				       name === Settings.data.nickname);
-	    }
-	  } else {
+	    // we know that this particalar marker exists because we created it before
+	    Googlemap.updatePosition(markers[name],
+				     coords,
+				     name === Settings.data.nickname);
+	  } else { // no data means that the user has been deleted
 	    console.log('"'+name+'" has gone away now!');
-	    if (markers[name]) {
+	    if (markers[name]) { // cleanup the marker if exists
 	      Googlemap.deleteMarker(markers[name]);
 	      delete markers[name];
 	    }
 	  }
 	});
       });
-
-      $scope.places = Places.places;
+      
+      Places.initPresenceSystem();
       geolocationInit();
-//      console.log('main view initialized now');
+      $scope.places = Places.places;
     }
 
     // init the google map object and start geolocating on load
@@ -99,6 +95,10 @@ angular.module('findMeApp')
 
     $scope.deletePlace = function(id) {
       Places.deletePlace(id);
+    };
+
+    $scope.deletePath = function(id) {
+      Googlemap.deletePath(id);
     };
     
     // filter only the places with available coordinates

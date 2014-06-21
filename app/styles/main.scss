@@ -19,15 +19,25 @@ body, html, div#page {
   width: 100%;
 }
 
-#menu {
+#menu, #gps_info {
     position: absolute;
     z-index: 1000;
-    font-size: 200%;
     opacity:0.8;
-    background-color: white;
-    cursor:pointer;
-    margin: .4em;
+    margin: .4em;    
 }
+
+#menu {
+    background-color: white;
+    font-size: 200%;
+    cursor:pointer;
+}
+
+#gps_info {
+    right: 0;
+    margin-top: 3px;
+    margin-right: 110px;
+}
+
 
 #menu a {
     padding: .15em .5em;
@@ -40,10 +50,8 @@ body, html, div#page {
     transition: all linear .15s;
 }
 
-
 #map_canvas.list_visible {
     height: 70%;
-
 }
 
 #map_canvas.full_screen {

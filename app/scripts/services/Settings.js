@@ -8,11 +8,18 @@ angular.module('findMeApp')
       return $routeParams.roomName && $localStorage.nickname && $localStorage.roomName;
     };
 
-    $rootScope.$on('$routeChangeSuccess', function () {
+    function refresh() {
       if ($routeParams.roomName) {
 	$localStorage.roomName = $routeParams.roomName;
       }
       $rootScope.title = '['+$localStorage.nickname+'] ' +
 	'Find Me :: ' + $localStorage.roomName;
+    }
+    
+    $rootScope.$on('$routeChangeSuccess', function () {
+      refresh();
     });
+
+    refresh();
+
   });

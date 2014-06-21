@@ -11,6 +11,9 @@ angular.module('findMeApp')
     this.setOwnLocation = function(nickname, roomName) {
       ownLocationRef = ref.child(roomName).child(nickname);
       this.places = $firebase(ref).$child(roomName);
+    };
+
+    this.initPresenceSystem = function() {
       var myConnectionsRef = ownLocationRef.child('connections');
       var lastOnlineRef = ownLocationRef.child('lastOnline');
 
@@ -31,6 +34,7 @@ angular.module('findMeApp')
 	}
       });
     };
+
     this.updateMyPosition = function(newPosition) {
       $firebase(ownLocationRef).$update({
 	coords: newPosition.coords,

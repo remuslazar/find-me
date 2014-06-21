@@ -10,9 +10,9 @@ angular.module('findMeApp')
     var markers = [];
     var paths = {};
 
-    var mapIsInitialized = false;    
+    var mapIsInitialized;
     var lastLocation = new google.maps.LatLng(52.520816, 13.410186); // berlin
-    var latlngbounds = new google.maps.LatLngBounds();
+    var latlngbounds;
 
     var lastPosition = $cookieStore.get('lastPosition');
     if (lastPosition && lastPosition.coords) {
@@ -35,7 +35,9 @@ angular.module('findMeApp')
     // Sets the map on all markers in the array.
     function setAllMap(map) {
       for (var i = 0; i < markers.length; i++) {
-	markers[i].setMap(map);
+	var marker = markers[i];
+	paths[marker.title].setMap(map);
+	marker.setMap(map);
       }
     }
     
@@ -48,22 +50,29 @@ angular.module('findMeApp')
     function deleteMarkers() {
       clearMarkers();
       markers = [];
+      paths = {};
+    }
+
+    // Delete the path named "name" if exists
+    function deletePath(name) {
+      if (paths[name]) {
+	paths[name].setMap(null);
+	delete paths[name];
+      }
     }
 
     // Deletes the specified marker
     function deleteMarker(marker) {
-      // delete the path associated with this marker first, if available
-      if (paths[marker.title]) {
-	paths[marker.title].setMap(null);
-	delete paths[marker.title];
-      }
+      // delete the path associated with this marker
+      deletePath(marker.title);
       var index = markers.indexOf(marker);
       if (index !== -1) {
 	marker.setMap(null);
-	markers.splice(index,1);
+	markers.splice(index,1); // remove it from the markers array
       }
     }
     
+    // Initialize a new map instance
     function mapInit() {
       var mapOptions = {
 	streetViewControl: false,
@@ -73,7 +82,10 @@ angular.module('findMeApp')
 	zoom: 14,
 	mapTypeId: google.maps.MapTypeId.ROADMAP
       };
+      deleteMarkers();
       map = new google.maps.Map(document.getElementById('map_canvas'), mapOptions);
+      mapIsInitialized = false;
+      latlngbounds = new google.maps.LatLngBounds();
     }
 
     function getMarkerIcon(heading) {
@@ -105,7 +117,7 @@ angular.module('findMeApp')
       var marker = new google.maps.Marker({
         map: map,
         position: pos,
-        title: isOwnLocation ? 'My location' : nickname,
+        title: nickname,
 	draggable: false,
 	animation: google.maps.Animation.DROP,
 	icon: isOwnLocation ? getMarkerIcon(0) : ''
@@ -160,8 +172,8 @@ angular.module('findMeApp')
     this.init = mapInit;
     this.centerMap = centerMap;
     this.createMarker = createMarker;
-    this.deleteMarkers = deleteMarkers;
     this.deleteMarker = deleteMarker;
+    this.deletePath = deletePath;
     this.panTo = function(coords) {
       if (!coords) { return; }
       map.panTo(new google.maps.LatLng(coords.latitude, coords.longitude));
