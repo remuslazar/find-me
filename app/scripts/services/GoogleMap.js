@@ -183,9 +183,13 @@ angular.module('findMeApp')
 
     this.updatePosition = function(marker, coords, isOwnLocation) {
       var pos = new google.maps.LatLng(coords.latitude, coords.longitude);
-      var heading = google.maps.geometry.spherical.computeHeading(
-	marker.position,
-	pos);
+      var heading = 0;
+
+      if (marker.position) {
+	heading = google.maps.geometry.spherical.computeHeading(
+	  marker.position,
+	  pos);
+      }
 
       if (isOwnLocation) {
 	ownPosition = pos;
