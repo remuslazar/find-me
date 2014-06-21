@@ -9,11 +9,13 @@
  */
 
 angular.module('findMeApp')
-  .controller('MainCtrl', function ($scope, Settings, $location, Places, Googlemap) {
+  .controller('MainCtrl', function ($scope, Settings, $location, Places, Googlemap, $timeout) {
+
+    var geolocationWatchId;
     
     function geolocationInit() {
       if (navigator.geolocation) {
-	navigator.geolocation.watchPosition(
+	geolocationWatchId = navigator.geolocation.watchPosition(
 	  function(position) { // success
 	     console.log('Latitude: ' + position.coords.latitude + ', ' +
 	     		'Longitude: ' + position.coords.longitude);
@@ -23,9 +25,12 @@ angular.module('findMeApp')
 	    $scope.gpsPosition = position;
 	  },
 	  function(err) { // error
-	    console.log('geolocation failed: '+err.message);
+	    console.log('geolocation failed: '+err.code);
+	    navigator.geolocation.clearWatch(geolocationWatchId);
 	    // try again in 10 seconds
-//	    $timeout(geolocationInit, 10000);
+	    $timeout(function() {
+	      geolocationInit();
+	    }, 10000);
 	  },
 	  {
 	    enableHighAccuracy: true,
