@@ -2,12 +2,22 @@
 
 angular.module('findMeApp')
   .service('Settings', function Settings($rootScope, $localStorage, $routeParams) {
+    
+    // save the roomName from url for the redirect after login
+    if ($routeParams.roomName) {
+      $localStorage.roomName = $routeParams.roomName;
+    }
     this.data = $localStorage;
-
+    
+    // if nickname undefined, create one on "GuestXX" the fly (user can change it later)
+    if (!this.data.nickname) {
+      this.data.nickname = 'Guest' + Math.floor((Math.random() * 100) + 1);
+    }
+    
     this.areValid = function() {
-      return $routeParams.roomName && $localStorage.nickname && $localStorage.roomName;
+      return this.data.nickname && $routeParams.roomName;
     };
-
+    
     function refresh() {
       if ($routeParams.roomName) {
 	$localStorage.roomName = $routeParams.roomName;
