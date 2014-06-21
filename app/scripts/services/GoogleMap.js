@@ -193,7 +193,6 @@ angular.module('findMeApp')
       var pos = new google.maps.LatLng(coords.latitude, coords.longitude);
       var heading = 0;
 
-      console.log(marker.position);
       if (marker.position) {
 	heading = google.maps.geometry.spherical.computeHeading(
 	  marker.position,
