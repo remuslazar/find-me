@@ -11,7 +11,7 @@ angular.module('findMeApp')
     
     // if nickname undefined, create one on "GuestXX" the fly (user can change it later)
     if (!this.data.nickname) {
-      this.data.nickname = 'Guest' + Math.floor((Math.random() * 100) + 1);
+      this.data.nickname = 'User' + Math.floor((Math.random() * 100) + 1);
     }
     
     this.areValid = function() {

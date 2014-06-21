@@ -120,4 +120,11 @@ angular.module('findMeApp')
 
     // make the settings service available to the view
     $scope.settings = Settings;
+
+    window.setInterval(function() {
+      $scope.$apply(function() {
+	$scope.now = new Date();
+      });
+    }, 5000);
+
   });
