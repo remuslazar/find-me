@@ -3,7 +3,7 @@
 /*global google */
 
 angular.module('findMeApp')
-  .service('Googlemap', function Googlemap($cookieStore) {
+  .service('Googlemap', function Googlemap($cookieStore, $timeout) {
     // AngularJS will instantiate a singleton by calling "new" on this function
 
     var map;
@@ -72,6 +72,16 @@ angular.module('findMeApp')
       }
     }
     
+    function deinit() {
+      deleteMarkers();
+      mapIsInitialized = false;
+      map = null;
+      latlngbounds = null;
+      infoWindow = null;
+    }
+
+    var infoWindow;
+
     // Initialize a new map instance
     function mapInit() {
       var mapOptions = {
@@ -82,10 +92,9 @@ angular.module('findMeApp')
 	zoom: 14,
 	mapTypeId: google.maps.MapTypeId.ROADMAP
       };
-      deleteMarkers();
       map = new google.maps.Map(document.getElementById('map_canvas'), mapOptions);
-      mapIsInitialized = false;
       latlngbounds = new google.maps.LatLngBounds();
+      infoWindow = new google.maps.InfoWindow()
     }
 
     function getMarkerIcon(heading) {
@@ -102,9 +111,6 @@ angular.module('findMeApp')
     }
 
     var ownPosition;
-
-    var infoWindow = new google.maps.InfoWindow();
-
 
     // Create a marker and display it on the map
     // coords should contain a valid position, else this function will fail
@@ -128,8 +134,8 @@ angular.module('findMeApp')
         infoWindow.open(map, marker);
       });
       latlngbounds.extend(pos);
-      if (markers.length) {
-	map.fitBounds(latlngbounds);
+      if (markers.length > 1) {
+	map.fitBounds(latlngbounds);	  
       }
       markers.push(marker);
       return marker;
@@ -171,6 +177,7 @@ angular.module('findMeApp')
 
     // exported functions for this service
     this.init = mapInit;
+    this.deinit = deinit;
     this.centerMap = centerMap;
     this.createMarker = createMarker;
     this.deleteMarker = deleteMarker;
@@ -186,6 +193,7 @@ angular.module('findMeApp')
       var pos = new google.maps.LatLng(coords.latitude, coords.longitude);
       var heading = 0;
 
+      console.log(marker.position);
       if (marker.position) {
 	heading = google.maps.geometry.spherical.computeHeading(
 	  marker.position,

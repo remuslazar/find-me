@@ -55,7 +55,7 @@ angular.module('findMeApp')
       Googlemap.panTo(place.coords);
     };
     
-    var markers = {};
+    var markers;
     
     function initView() {
       $scope.gpsPosition = null;
@@ -72,14 +72,16 @@ angular.module('findMeApp')
 	  console.log('rt update for "'+name+'" received');
 	  var coords = dataSnapshot.snapshot.value;
 	  if (coords) {
-	    if (!markers[name]) { // create a marker on the fly
-	      markers[name] = Googlemap.createMarker(name, coords, name === Settings.data.nickname);
-	      Googlemap.centerMap(info);
+	    if (coords.latitude && coords.longitude) {
+	      if (!markers[name]) { // create a marker on the fly
+		markers[name] = Googlemap.createMarker(name, coords, name === Settings.data.nickname);
+		Googlemap.centerMap(info);
+	      }
+	      // we know that this particalar marker exists because we created it before
+	      Googlemap.updatePosition(markers[name],
+				       coords,
+				       name === Settings.data.nickname);
 	    }
-	    // we know that this particalar marker exists because we created it before
-	    Googlemap.updatePosition(markers[name],
-				     coords,
-				     name === Settings.data.nickname);
 	  } else { // no data means that the user has been deleted
 	    console.log('"'+name+'" has gone away now!');
 	    if (markers[name]) { // cleanup the marker if exists
@@ -97,6 +99,7 @@ angular.module('findMeApp')
 
     // init the google map object and start geolocating on load
     angular.element(document).ready(function () {
+      console.log('initView() called');
       initView();
     });
 
@@ -121,10 +124,14 @@ angular.module('findMeApp')
     // make the settings service available to the view
     $scope.settings = Settings;
 
-    window.setInterval(function() {
+    var timer = window.setInterval(function() {
       $scope.$apply(function() {
 	$scope.now = new Date();
       });
     }, 5000);
 
+    $scope.$on('$destroy', function() {
+      clearInterval(timer);
+      Googlemap.deinit();
+    });
   });
