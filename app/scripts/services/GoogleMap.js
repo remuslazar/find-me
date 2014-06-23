@@ -3,7 +3,7 @@
 /*global google */
 
 angular.module('findMeApp')
-  .service('Googlemap', function Googlemap($cookieStore, $timeout) {
+  .service('Googlemap', function Googlemap($cookieStore) {
     // AngularJS will instantiate a singleton by calling "new" on this function
 
     var map;
@@ -88,13 +88,16 @@ angular.module('findMeApp')
 	streetViewControl: false,
 	panControl: false,
 	zoomControl: false,
+	scaleControl: true,
+	maxZoom: 19,
+	minZoom: 2,
 	center: lastLocation,
 	zoom: 14,
 	mapTypeId: google.maps.MapTypeId.ROADMAP
       };
       map = new google.maps.Map(document.getElementById('map_canvas'), mapOptions);
       latlngbounds = new google.maps.LatLngBounds();
-      infoWindow = new google.maps.InfoWindow()
+      infoWindow = new google.maps.InfoWindow();
     }
 
     function getMarkerIcon(heading) {

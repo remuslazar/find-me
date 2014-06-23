@@ -44,8 +44,12 @@ angular.module('findMeApp')
     };
 
     this.deletePlace = function(id) {
-//      console.log('deleting id: '+id);
       this.places.$remove(id);
     };
+    
+    this.renameDevice = function(oldName, newName, roomName) {
+      this.places.$remove(oldName);
+    };
+    
 
   });

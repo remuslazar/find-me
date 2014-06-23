@@ -42,12 +42,23 @@ angular.module('findMeApp')
       }
     }
     
-    function login() {
+    function login(userRequested) {
+      if (userRequested) {
+	Settings.data.oldNickname = Settings.data.nickname;
+      }
+
       $location.path('/login');
     }
     
     if (!Settings.areValid()) {
       return login();
+    }
+
+    if (Settings.data.oldNickname) {
+      if (Settings.data.oldNickname !== Settings.data.nickname) {
+	Places.renameDevice(Settings.data.oldNickname, Settings.data.nickname, Settings.data.roomName);
+      }
+      delete Settings.data.oldNickname;
     }
     
     $scope.selectPlace = function(place) {
@@ -98,7 +109,8 @@ angular.module('findMeApp')
     }
 
     // init the google map object and start geolocating on load
-    angular.element(document).ready(function () {
+//    $scope.$on('$viewContentLoaded', function() {
+    angular.element(document).ready(function() {
       console.log('initView() called');
       initView();
     });
